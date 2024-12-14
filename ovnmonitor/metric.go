@@ -7,7 +7,7 @@ var (
 	metricOvnHealthyStatus = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Namespace: metricNamespace,
-			Name:      "ovn_status",
+			Name:      "status",
 			Help:      "OVN Health Status. The values are:(2) for standby or follower, (1) for active or leader, (0) for unhealthy.",
 		},
 		[]string{
@@ -18,7 +18,7 @@ var (
 	metricOvnHealthyStatusContent = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Namespace: metricNamespace,
-			Name:      "ovn_status_content",
+			Name:      "status_content",
 			Help:      "OVN Health Status. The values are always 1. While the value of status label is the really status report.",
 		},
 		[]string{
