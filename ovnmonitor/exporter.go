@@ -1,21 +1,19 @@
 package ovnmonitor
 
 import (
+	"fmt"
+	"log/slog"
 	"os"
-	"os/exec"
 	"sync"
 	"time"
 
 	"github.com/kubeovn/ovsdb"
-	"k8s.io/klog/v2"
-
-	"github.com/kubeovn/kube-ovn/pkg/util"
 )
 
-const metricNamespace = "kube_ovn"
+const metricNamespace = "ovn"
 
 var (
-	appName          = "ovn-monitor"
+	appName          = "ovn-exporter"
 	isClusterEnabled = true
 	tryConnectCnt    = 0
 	checkNbDbCnt     = 0
@@ -106,7 +104,7 @@ func (e *Exporter) StartConnection() error {
 	if err := e.Client.Connect(); err != nil {
 		return err
 	}
-	klog.Infof("%s: exporter connect successfully", e.Client.System.Hostname)
+	slog.Info("Exporter connected successfully to database socket")
 	return nil
 }
 
@@ -114,14 +112,15 @@ func (e *Exporter) StartConnection() error {
 func (e *Exporter) TryClientConnection() {
 	for {
 		if tryConnectCnt > 5 {
-			util.LogFatalAndExit(nil, "%s: ovn-monitor failed to reconnect db socket finally", e.Client.System.Hostname)
+			slog.Error("ovn-exporter failed to reconnect to db socket")
+			os.Exit(1)
 		}
 
 		if err := e.StartConnection(); err != nil {
 			tryConnectCnt++
-			klog.Errorf("%s: ovn-monitor failed to reconnect db socket %v times", e.Client.System.Hostname, tryConnectCnt)
+			slog.Error(fmt.Sprintf("ovn-exporter failed to reconnect db socket %v times", tryConnectCnt))
 		} else {
-			klog.Infof("%s: ovn-monitor reconnect db successfully", e.Client.System.Hostname)
+			slog.Info("ovn-exporter reconnected to db successfully")
 			break
 		}
 
@@ -192,7 +191,7 @@ func (e *Exporter) exportOvnLogFileSizeGauge() {
 	for _, component := range components {
 		file, err := e.Client.GetLogFileInfo(component)
 		if err != nil {
-			klog.Errorf("%s: log-file-%v", component, err)
+			slog.Error(fmt.Sprintf("%s: log-file", component), "error", err)
 			e.IncrementErrorCounter()
 			continue
 		}
@@ -211,7 +210,7 @@ func (e *Exporter) exportOvnDBFileSizeGauge() {
 	for dbFile, database := range dirDbMap {
 		fileInfo, err := os.Stat(dbFile)
 		if err != nil {
-			klog.Errorf("Failed to get the DB size for database %s: %v", database, err)
+			slog.Error(fmt.Sprintf("Failed to get the DB size for database %s", database), "error", err)
 			return
 		}
 		metricDBFileSize.WithLabelValues(e.Client.System.Hostname, database).Set(float64(fileInfo.Size()))
@@ -225,7 +224,7 @@ func (e *Exporter) exportOvnRequestErrorGauge() {
 func (e *Exporter) exportOvnChassisGauge() {
 	metricChassisInfo.Reset()
 	if vteps, err := e.Client.GetChassis(); err != nil {
-		klog.Errorf("%s: %v", e.Client.Database.Southbound.Name, err)
+		slog.Error(fmt.Sprintf("%s", e.Client.Database.Southbound.Name), "error", err)
 		e.IncrementErrorCounter()
 	} else {
 		for _, vtep := range vteps {
@@ -248,7 +247,7 @@ func (e *Exporter) exportOvnClusterEnableGauge() {
 	metricClusterEnabled.Reset()
 	isClusterEnabled, err := getClusterEnableState(e.Client.Database.Northbound.File.Data.Path)
 	if err != nil {
-		klog.Errorf("failed to get output of cluster status: %v", err)
+		slog.Error("failed to get output of cluster status", "error", err)
 	}
 	if isClusterEnabled {
 		metricClusterEnabled.WithLabelValues(e.Client.System.Hostname, e.Client.Database.Northbound.File.Data.Path).Set(1)
@@ -266,7 +265,7 @@ func (e *Exporter) exportOvnClusterInfoGauge() {
 	for direction, database := range dirDbMap {
 		clusterStatus, err := getClusterInfo(direction, database)
 		if err != nil {
-			klog.Errorf("Failed to get Cluster Info for database %s: %v", database, err)
+			slog.Error(fmt.Sprintf("Failed to get Cluster Info for database %s", database), "error", err)
 			return
 		}
 		e.setOvnClusterInfoMetric(clusterStatus, database)
@@ -279,7 +278,7 @@ func (e *Exporter) exportOvnDBStatusGauge() {
 	for _, database := range dbList {
 		ok, err := getDBStatus(database)
 		if err != nil {
-			klog.Errorf("Failed to get DB status for %s: %v", database, err)
+			slog.Error(fmt.Sprintf("Failed to get DB status for %s", database), "error", err)
 			return
 		}
 		if ok {
@@ -291,26 +290,20 @@ func (e *Exporter) exportOvnDBStatusGauge() {
 			case "OVN_Northbound":
 				checkNbDbCnt++
 				if checkNbDbCnt < 6 {
-					klog.Warningf("Failed to get OVN NB DB status for %v times", checkNbDbCnt)
+					slog.Warn(fmt.Sprintf("Failed to get OVN NB DB status for %v times", checkNbDbCnt))
 					return
 				}
-				klog.Warningf("Failed to get OVN NB DB status for %v times, ready to restore OVN DB", checkNbDbCnt)
+				slog.Warn(fmt.Sprintf("Failed to get OVN NB DB status for %v times, ready to restore OVN DB", checkNbDbCnt))
 				checkNbDbCnt = 0
 			case "OVN_Southbound":
 				checkSbDbCnt++
 				if checkSbDbCnt < 6 {
-					klog.Warningf("Failed to get OVN SB DB status for %v times", checkSbDbCnt)
+					slog.Warn(fmt.Sprintf("Failed to get OVN SB DB status for %v times", checkSbDbCnt))
 					return
 				}
-				klog.Warningf("Failed to get OVN SB DB status for %v times, ready to restore OVN DB", checkSbDbCnt)
+				slog.Warn(fmt.Sprintf("Failed to get OVN SB DB status for %v times, ready to restore OVN DB", checkSbDbCnt))
 				checkSbDbCnt = 0
 			}
-
-			output, err := exec.Command("/bin/bash", "/kube-ovn/restore-ovn-nb-db.sh").CombinedOutput()
-			if err != nil {
-				klog.Errorf("Failed to restore OVN DB, err %v", err)
-			}
-			klog.Infof("restore OVN DB %v, process output %v", database, string(output))
 		}
 	}
 }

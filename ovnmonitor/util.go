@@ -2,6 +2,7 @@ package ovnmonitor
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"strconv"
@@ -9,7 +10,6 @@ import (
 	"sync/atomic"
 
 	"github.com/kubeovn/ovsdb"
-	"k8s.io/klog/v2"
 )
 
 // IncrementErrorCounter increases the counter of failed queries to OVN server.
@@ -27,7 +27,7 @@ func (e *Exporter) getOvnStatus() map[string]int {
 	cmd := exec.Command("sh", "-c", cmdstr)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		klog.Errorf("get ovn-northbound status failed, err %v", err)
+		slog.Error("get ovn-northbound status failed", "error", err)
 		result["ovsdb-server-northbound"] = 0
 	}
 	result["ovsdb-server-northbound"] = parseDbStatus(string(output))
@@ -37,7 +37,7 @@ func (e *Exporter) getOvnStatus() map[string]int {
 	cmd = exec.Command("sh", "-c", cmdstr)
 	output, err = cmd.CombinedOutput()
 	if err != nil {
-		klog.Errorf("get ovn-southbound status failed, err %v", err)
+		slog.Error("get ovn-southbound status failed", "error", err)
 		result["ovsdb-server-southbound"] = 0
 	}
 	result["ovsdb-server-southbound"] = parseDbStatus(string(output))
@@ -45,15 +45,14 @@ func (e *Exporter) getOvnStatus() map[string]int {
 	// get ovn-northd status
 	pid, err := os.ReadFile("/var/run/ovn/ovn-northd.pid")
 	if err != nil {
-		klog.Errorf("read ovn-northd pid failed, err %v", err)
+		slog.Error("read ovn-northd pid failed", "error", err)
 		result["ovn-northd"] = 0
 	} else {
 		cmdstr := "ovs-appctl -t /var/run/ovn/ovn-northd." + strings.Trim(string(pid), "\n") + ".ctl status"
-		klog.V(3).Infof("cmd is %v", cmdstr)
 		cmd := exec.Command("sh", "-c", cmdstr)
 		output, err := cmd.CombinedOutput()
 		if err != nil {
-			klog.Errorf("get ovn-northd status failed, err %v", err)
+			slog.Error("get ovn-northd status failed", "error", err)
 			result["ovn-northd"] = 0
 		}
 		if len(strings.Split(string(output), ":")) != 2 {
@@ -79,7 +78,7 @@ func (e *Exporter) getOvnStatusContent() map[string]string {
 	cmd := exec.Command("sh", "-c", cmdstr)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		klog.Errorf("get ovn-northbound status failed, err %v", err)
+		slog.Error("get ovn-northbound status failed", "error", err)
 	}
 	if strings.Contains(string(output), "Servers:") {
 		servers := strings.Split(string(output), "Servers:")[1]
@@ -91,7 +90,7 @@ func (e *Exporter) getOvnStatusContent() map[string]string {
 	cmd = exec.Command("sh", "-c", cmdstr)
 	output, err = cmd.CombinedOutput()
 	if err != nil {
-		klog.Errorf("get ovn-southbound status failed, err %v", err)
+		slog.Error("get ovn-southbound status failed", "error", err)
 	}
 	if strings.Contains(string(output), "Servers:") {
 		servers := strings.Split(string(output), "Servers:")[1]
@@ -106,7 +105,7 @@ func getClusterEnableState(dbName string) (bool, error) {
 	cmd := exec.Command("sh", "-c", cmdstr)
 	_, err := cmd.CombinedOutput()
 	if err != nil {
-		klog.Error(err)
+		slog.Error(fmt.Sprintf("%v", err))
 		return false, err
 	}
 	return true, nil
@@ -115,7 +114,7 @@ func getClusterEnableState(dbName string) (bool, error) {
 func (e *Exporter) setLogicalSwitchInfoMetric() {
 	lsws, err := e.Client.GetLogicalSwitches()
 	if err != nil {
-		klog.Errorf("%s: %v", e.Client.Database.Southbound.Name, err)
+		slog.Error(fmt.Sprintf("%s", e.Client.Database.Southbound.Name), "error", err)
 		e.IncrementErrorCounter()
 	} else {
 		for _, lsw := range lsws {
@@ -164,7 +163,7 @@ func lspAddress(addresses []ovsdb.OvnLogicalSwitchPortAddress) (mac, ip string) 
 func (e *Exporter) setLogicalSwitchPortInfoMetric() {
 	lswps, err := e.Client.GetLogicalSwitchPorts()
 	if err != nil {
-		klog.Errorf("%s: %v", e.Client.Database.Southbound.Name, err)
+		slog.Error(fmt.Sprintf("%s", e.Client.Database.Southbound.Name), "error", err)
 		e.IncrementErrorCounter()
 	} else {
 		for _, port := range lswps {
@@ -322,7 +321,7 @@ func getDBStatus(dbName string) (bool, error) {
 	cmd := exec.Command("sh", "-c", cmdstr)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		klog.Errorf("get ovn-northbound status failed, err %v", err)
+		slog.Error("get ovn-northbound status failed", "error", err)
 		return false, err
 	}
 	lines := strings.Split(string(output), "\n")
