@@ -30,10 +30,8 @@ func main() {
 	}
 	exporter.StartOvnMetrics()
 	mux := http.NewServeMux()
-	if config.EnableMetrics {
-		mux.Handle(config.MetricsPath, promhttp.Handler())
-		slog.Info(fmt.Sprintf("Listening on %s", config.ListenAddress))
-	}
+	mux.Handle(config.MetricsPath, promhttp.Handler())
+	slog.Info(fmt.Sprintf("Listening on %s", config.ListenAddress))
 
 	// conform to Gosec G114
 	// https://github.com/securego/gosec#available-rules
