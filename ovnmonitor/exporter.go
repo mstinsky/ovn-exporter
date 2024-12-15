@@ -69,7 +69,6 @@ func (e *Exporter) initParas(cfg *Configuration) {
 	e.Client.Database.Vswitch.Name = cfg.DatabaseVswitchName
 	e.Client.Database.Vswitch.Socket.Remote = cfg.DatabaseVswitchSocketRemote
 	e.Client.Database.Vswitch.File.Data.Path = cfg.DatabaseVswitchFileDataPath
-	e.Client.Database.Vswitch.File.Log.Path = cfg.DatabaseVswitchFileLogPath
 	e.Client.Database.Vswitch.File.Pid.Path = cfg.DatabaseVswitchFilePidPath
 	e.Client.Database.Vswitch.File.SystemID.Path = cfg.DatabaseVswitchFileSystemIDPath
 
@@ -77,7 +76,6 @@ func (e *Exporter) initParas(cfg *Configuration) {
 	e.Client.Database.Northbound.Socket.Remote = cfg.DatabaseNorthboundSocketRemote
 	e.Client.Database.Northbound.Socket.Control = cfg.DatabaseNorthboundSocketControl
 	e.Client.Database.Northbound.File.Data.Path = cfg.DatabaseNorthboundFileDataPath
-	e.Client.Database.Northbound.File.Log.Path = cfg.DatabaseNorthboundFileLogPath
 	e.Client.Database.Northbound.File.Pid.Path = cfg.DatabaseNorthboundFilePidPath
 	e.Client.Database.Northbound.Port.Default = cfg.DatabaseNorthboundPortDefault
 	e.Client.Database.Northbound.Port.Ssl = cfg.DatabaseNorthboundPortSsl
@@ -87,15 +85,12 @@ func (e *Exporter) initParas(cfg *Configuration) {
 	e.Client.Database.Southbound.Socket.Remote = cfg.DatabaseSouthboundSocketRemote
 	e.Client.Database.Southbound.Socket.Control = cfg.DatabaseSouthboundSocketControl
 	e.Client.Database.Southbound.File.Data.Path = cfg.DatabaseSouthboundFileDataPath
-	e.Client.Database.Southbound.File.Log.Path = cfg.DatabaseSouthboundFileLogPath
 	e.Client.Database.Southbound.File.Pid.Path = cfg.DatabaseSouthboundFilePidPath
 	e.Client.Database.Southbound.Port.Default = cfg.DatabaseSouthboundPortDefault
 	e.Client.Database.Southbound.Port.Ssl = cfg.DatabaseSouthboundPortSsl
 	e.Client.Database.Southbound.Port.Raft = cfg.DatabaseSouthboundPortRaft
 
-	e.Client.Service.Vswitchd.File.Log.Path = cfg.ServiceVswitchdFileLogPath
 	e.Client.Service.Vswitchd.File.Pid.Path = cfg.ServiceVswitchdFilePidPath
-	e.Client.Service.Northd.File.Log.Path = cfg.ServiceNorthdFileLogPath
 	e.Client.Service.Northd.File.Pid.Path = cfg.ServiceNorthdFilePidPath
 }
 
@@ -144,7 +139,6 @@ func (e *Exporter) StartOvnMetrics() {
 func (e *Exporter) ovnMetricsUpdate() {
 	for {
 		e.exportOvnStatusGauge()
-		e.exportOvnLogFileSizeGauge()
 		e.exportOvnDBFileSizeGauge()
 		e.exportOvnRequestErrorGauge()
 		e.exportOvnDBStatusGauge()
@@ -178,24 +172,6 @@ func (e *Exporter) exportOvnStatusGauge() {
 	statusResult := e.getOvnStatusContent()
 	for k, v := range statusResult {
 		metricOvnHealthyStatusContent.WithLabelValues(e.Client.System.Hostname, k, v).Set(float64(1))
-	}
-}
-
-func (e *Exporter) exportOvnLogFileSizeGauge() {
-	metricLogFileSize.Reset()
-	components := []string{
-		"ovsdb-server-southbound",
-		"ovsdb-server-northbound",
-		"ovn-northd",
-	}
-	for _, component := range components {
-		file, err := e.Client.GetLogFileInfo(component)
-		if err != nil {
-			slog.Error(fmt.Sprintf("%s: log-file", component), "error", err)
-			e.IncrementErrorCounter()
-			continue
-		}
-		metricLogFileSize.WithLabelValues(e.Client.System.Hostname, file.Component, file.Path).Set(float64(file.Info.Size()))
 	}
 }
 
