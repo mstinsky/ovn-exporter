@@ -65,12 +65,6 @@ func (e *Exporter) initParas(cfg *Configuration) {
 
 	e.Client.Timeout = cfg.PollTimeout
 	e.Client.System.Hostname = os.Getenv("KUBE_NODE_NAME")
-	e.Client.System.RunDir = cfg.SystemRunDir
-	e.Client.Database.Vswitch.Name = cfg.DatabaseVswitchName
-	e.Client.Database.Vswitch.Socket.Remote = cfg.DatabaseVswitchSocketRemote
-	e.Client.Database.Vswitch.File.Data.Path = cfg.DatabaseVswitchFileDataPath
-	e.Client.Database.Vswitch.File.Pid.Path = cfg.DatabaseVswitchFilePidPath
-	e.Client.Database.Vswitch.File.SystemID.Path = cfg.DatabaseVswitchFileSystemIDPath
 
 	e.Client.Database.Northbound.Name = cfg.DatabaseNorthboundName
 	e.Client.Database.Northbound.Socket.Remote = cfg.DatabaseNorthboundSocketRemote
