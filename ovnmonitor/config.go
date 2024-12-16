@@ -14,12 +14,6 @@ type Configuration struct {
 	MetricsPath                     string
 	PollTimeout                     int
 	PollInterval                    int
-	SystemRunDir                    string
-	DatabaseVswitchName             string
-	DatabaseVswitchSocketRemote     string
-	DatabaseVswitchFileDataPath     string
-	DatabaseVswitchFilePidPath      string
-	DatabaseVswitchFileSystemIDPath string
 	DatabaseNorthboundName          string
 	DatabaseNorthboundSocketRemote  string
 	DatabaseNorthboundSocketControl string
@@ -47,13 +41,6 @@ func ParseFlags() (*Configuration, error) {
 		argMetricsPath   = pflag.String("telemetry-path", "/metrics", "Path under which to expose metrics.")
 		argPollTimeout   = pflag.Int("ovs.timeout", 2, "Timeout on JSON-RPC requests to OVN.")
 		argPollInterval  = pflag.Int("ovs.poll-interval", 30, "The minimum interval (in seconds) between collections from OVN server.")
-
-		argSystemRunDir                    = pflag.String("system.run.dir", "/var/run/openvswitch", "OVS default run directory.")
-		argDatabaseVswitchName             = pflag.String("database.vswitch.name", "Open_vSwitch", "The name of OVS db.")
-		argDatabaseVswitchSocketRemote     = pflag.String("database.vswitch.socket.remote", "unix:/var/run/openvswitch/db.sock", "JSON-RPC unix socket to OVS db.")
-		argDatabaseVswitchFileDataPath     = pflag.String("database.vswitch.file.data.path", "/etc/openvswitch/conf.db", "OVS db file.")
-		argDatabaseVswitchFilePidPath      = pflag.String("database.vswitch.file.pid.path", "/var/run/openvswitch/ovsdb-server.pid", "OVS db process id file.")
-		argDatabaseVswitchFileSystemIDPath = pflag.String("database.vswitch.file.system.id.path", "/etc/openvswitch/system-id.conf", "OVS system id file.")
 
 		argDatabaseNorthboundName          = pflag.String("database.northbound.name", "OVN_Northbound", "The name of OVN NB (northbound) db.")
 		argDatabaseNorthboundSocketRemote  = pflag.String("database.northbound.socket.remote", "unix:/run/ovn/ovnnb_db.sock", "JSON-RPC unix socket to OVN NB db.")
@@ -85,12 +72,6 @@ func ParseFlags() (*Configuration, error) {
 		MetricsPath:                     *argMetricsPath,
 		PollTimeout:                     *argPollTimeout,
 		PollInterval:                    *argPollInterval,
-		SystemRunDir:                    *argSystemRunDir,
-		DatabaseVswitchName:             *argDatabaseVswitchName,
-		DatabaseVswitchSocketRemote:     *argDatabaseVswitchSocketRemote,
-		DatabaseVswitchFileDataPath:     *argDatabaseVswitchFileDataPath,
-		DatabaseVswitchFilePidPath:      *argDatabaseVswitchFilePidPath,
-		DatabaseVswitchFileSystemIDPath: *argDatabaseVswitchFileSystemIDPath,
 		DatabaseNorthboundName:          *argDatabaseNorthboundName,
 		DatabaseNorthboundSocketRemote:  *argDatabaseNorthboundSocketRemote,
 		DatabaseNorthboundSocketControl: *argDatabaseNorthboundSocketControl,
