@@ -37,18 +37,6 @@ var (
 			"hostname",
 		})
 
-	metricLogFileSize = prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Namespace: metricNamespace,
-			Name:      "log_file_size_bytes",
-			Help:      "The size of a log file associated with an OVN component. The unit is Bytes.",
-		},
-		[]string{
-			"hostname",
-			"component",
-			"filename",
-		})
-
 	metricDBFileSize = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Namespace: metricNamespace,
@@ -479,7 +467,6 @@ func registerOvnMetrics() {
 	prometheus.MustRegister(metricOvnHealthyStatus)
 	prometheus.MustRegister(metricOvnHealthyStatusContent)
 	prometheus.MustRegister(metricRequestErrorNums)
-	prometheus.MustRegister(metricLogFileSize)
 	prometheus.MustRegister(metricDBFileSize)
 	prometheus.MustRegister(metricDBStatus)
 
