@@ -28,7 +28,6 @@ type Configuration struct {
 	DatabaseSouthboundPortDefault   int
 	DatabaseSouthboundPortSsl       int
 	DatabaseSouthboundPortRaft      int
-	ServiceVswitchdFilePidPath      string
 	ServiceNorthdFilePidPath        string
 }
 
@@ -56,7 +55,6 @@ func ParseFlags() (*Configuration, error) {
 		argDatabaseSouthboundPortSsl       = pflag.Int("database.southbound.port.ssl", 6632, "OVN SB db network socket secure port.")
 		argDatabaseSouthboundPortRaft      = pflag.Int("database.southbound.port.raft", 6644, "OVN SB db network port for clustering (raft)")
 
-		argServiceVswitchdFilePidPath = pflag.String("service.vswitchd.file.pid.path", "/var/run/openvswitch/ovs-vswitchd.pid", "OVS vswitchd daemon process id file.")
 		argServiceNorthdFilePidPath   = pflag.String("service.ovn.northd.file.pid.path", "/var/run/ovn/ovn-northd.pid", "OVN northd daemon process id file.")
 	)
 
@@ -83,7 +81,6 @@ func ParseFlags() (*Configuration, error) {
 		DatabaseSouthboundPortDefault:   *argDatabaseSouthboundPortDefault,
 		DatabaseSouthboundPortSsl:       *argDatabaseSouthboundPortSsl,
 		DatabaseSouthboundPortRaft:      *argDatabaseSouthboundPortRaft,
-		ServiceVswitchdFilePidPath:      *argServiceVswitchdFilePidPath,
 		ServiceNorthdFilePidPath:        *argServiceNorthdFilePidPath,
 	}
 
