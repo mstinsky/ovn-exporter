@@ -14,7 +14,6 @@ type Configuration struct {
 	MetricsPath                     string
 	PollTimeout                     int
 	PollInterval                    int
-	DatabaseNorthboundName          string
 	DatabaseNorthboundSocketRemote  string
 	DatabaseNorthboundSocketControl string
 	DatabaseNorthboundFileDataPath  string
@@ -22,7 +21,6 @@ type Configuration struct {
 	DatabaseNorthboundPortDefault   int
 	DatabaseNorthboundPortSsl       int
 	DatabaseNorthboundPortRaft      int
-	DatabaseSouthboundName          string
 	DatabaseSouthboundSocketRemote  string
 	DatabaseSouthboundSocketControl string
 	DatabaseSouthboundFileDataPath  string
@@ -42,7 +40,6 @@ func ParseFlags() (*Configuration, error) {
 		argPollTimeout   = pflag.Int("ovs.timeout", 2, "Timeout on JSON-RPC requests to OVN.")
 		argPollInterval  = pflag.Int("ovs.poll-interval", 30, "The minimum interval (in seconds) between collections from OVN server.")
 
-		argDatabaseNorthboundName          = pflag.String("database.northbound.name", "OVN_Northbound", "The name of OVN NB (northbound) db.")
 		argDatabaseNorthboundSocketRemote  = pflag.String("database.northbound.socket.remote", "unix:/run/ovn/ovnnb_db.sock", "JSON-RPC unix socket to OVN NB db.")
 		argDatabaseNorthboundSocketControl = pflag.String("database.northbound.socket.control", "unix:/run/ovn/ovnnb_db.ctl", "JSON-RPC unix socket to OVN NB app.")
 		argDatabaseNorthboundFileDataPath  = pflag.String("database.northbound.file.data.path", "/etc/ovn/ovnnb_db.db", "OVN NB db file.")
@@ -51,7 +48,6 @@ func ParseFlags() (*Configuration, error) {
 		argDatabaseNorthboundPortSsl       = pflag.Int("database.northbound.port.ssl", 6631, "OVN NB db network socket secure port.")
 		argDatabaseNorthboundPortRaft      = pflag.Int("database.northbound.port.raft", 6643, "OVN NB db network port for clustering (raft)")
 
-		argDatabaseSouthboundName          = pflag.String("database.southbound.name", "OVN_Southbound", "The name of OVN SB (southbound) db.")
 		argDatabaseSouthboundSocketRemote  = pflag.String("database.southbound.socket.remote", "unix:/run/ovn/ovnsb_db.sock", "JSON-RPC unix socket to OVN SB db.")
 		argDatabaseSouthboundSocketControl = pflag.String("database.southbound.socket.control", "unix:/run/ovn/ovnsb_db.ctl", "JSON-RPC unix socket to OVN SB app.")
 		argDatabaseSouthboundFileDataPath  = pflag.String("database.southbound.file.data.path", "/etc/ovn/ovnsb_db.db", "OVN SB db file.")
@@ -72,7 +68,6 @@ func ParseFlags() (*Configuration, error) {
 		MetricsPath:                     *argMetricsPath,
 		PollTimeout:                     *argPollTimeout,
 		PollInterval:                    *argPollInterval,
-		DatabaseNorthboundName:          *argDatabaseNorthboundName,
 		DatabaseNorthboundSocketRemote:  *argDatabaseNorthboundSocketRemote,
 		DatabaseNorthboundSocketControl: *argDatabaseNorthboundSocketControl,
 		DatabaseNorthboundFileDataPath:  *argDatabaseNorthboundFileDataPath,
@@ -81,7 +76,6 @@ func ParseFlags() (*Configuration, error) {
 		DatabaseNorthboundPortSsl:       *argDatabaseNorthboundPortSsl,
 		DatabaseNorthboundPortRaft:      *argDatabaseNorthboundPortRaft,
 
-		DatabaseSouthboundName:          *argDatabaseSouthboundName,
 		DatabaseSouthboundSocketRemote:  *argDatabaseSouthboundSocketRemote,
 		DatabaseSouthboundSocketControl: *argDatabaseSouthboundSocketControl,
 		DatabaseSouthboundFileDataPath:  *argDatabaseSouthboundFileDataPath,

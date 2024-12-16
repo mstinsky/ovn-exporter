@@ -66,7 +66,7 @@ func (e *Exporter) initParas(cfg *Configuration) {
 	e.Client.Timeout = cfg.PollTimeout
 	e.Client.System.Hostname = os.Getenv("KUBE_NODE_NAME")
 
-	e.Client.Database.Northbound.Name = cfg.DatabaseNorthboundName
+	e.Client.Database.Northbound.Name = "OVN_Northbound"
 	e.Client.Database.Northbound.Socket.Remote = cfg.DatabaseNorthboundSocketRemote
 	e.Client.Database.Northbound.Socket.Control = cfg.DatabaseNorthboundSocketControl
 	e.Client.Database.Northbound.File.Data.Path = cfg.DatabaseNorthboundFileDataPath
@@ -75,7 +75,7 @@ func (e *Exporter) initParas(cfg *Configuration) {
 	e.Client.Database.Northbound.Port.Ssl = cfg.DatabaseNorthboundPortSsl
 	e.Client.Database.Northbound.Port.Raft = cfg.DatabaseNorthboundPortRaft
 
-	e.Client.Database.Southbound.Name = cfg.DatabaseSouthboundName
+	e.Client.Database.Southbound.Name = "OVN_Southbound"
 	e.Client.Database.Southbound.Socket.Remote = cfg.DatabaseSouthboundSocketRemote
 	e.Client.Database.Southbound.Socket.Control = cfg.DatabaseSouthboundSocketControl
 	e.Client.Database.Southbound.File.Data.Path = cfg.DatabaseSouthboundFileDataPath
