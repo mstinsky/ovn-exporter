@@ -84,7 +84,6 @@ func (e *Exporter) initParas(cfg *Configuration) {
 	e.Client.Database.Southbound.Port.Ssl = cfg.DatabaseSouthboundPortSsl
 	e.Client.Database.Southbound.Port.Raft = cfg.DatabaseSouthboundPortRaft
 
-	e.Client.Service.Vswitchd.File.Pid.Path = cfg.ServiceVswitchdFilePidPath
 	e.Client.Service.Northd.File.Pid.Path = cfg.ServiceNorthdFilePidPath
 }
 
