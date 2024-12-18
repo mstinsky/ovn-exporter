@@ -64,7 +64,6 @@ func (e *Exporter) initParas(cfg *Configuration) {
 	e.pollInterval = cfg.PollInterval
 
 	e.Client.Timeout = cfg.PollTimeout
-	e.Client.System.Hostname = os.Getenv("KUBE_NODE_NAME")
 
 	e.Client.Database.Northbound.Name = "OVN_Northbound"
 	e.Client.Database.Northbound.Socket.Remote = cfg.DatabaseNorthboundSocketRemote
@@ -158,13 +157,13 @@ func (e *Exporter) exportOvnStatusGauge() {
 	metricOvnHealthyStatus.Reset()
 	result := e.getOvnStatus()
 	for k, v := range result {
-		metricOvnHealthyStatus.WithLabelValues(e.Client.System.Hostname, k).Set(float64(v))
+		metricOvnHealthyStatus.WithLabelValues(k).Set(float64(v))
 	}
 
 	metricOvnHealthyStatusContent.Reset()
 	statusResult := e.getOvnStatusContent()
 	for k, v := range statusResult {
-		metricOvnHealthyStatusContent.WithLabelValues(e.Client.System.Hostname, k, v).Set(float64(1))
+		metricOvnHealthyStatusContent.WithLabelValues(k, v).Set(float64(1))
 	}
 }
 
@@ -182,12 +181,12 @@ func (e *Exporter) exportOvnDBFileSizeGauge() {
 			slog.Error(fmt.Sprintf("Failed to get the DB size for database %s", database), "error", err)
 			return
 		}
-		metricDBFileSize.WithLabelValues(e.Client.System.Hostname, database).Set(float64(fileInfo.Size()))
+		metricDBFileSize.WithLabelValues(database).Set(float64(fileInfo.Size()))
 	}
 }
 
 func (e *Exporter) exportOvnRequestErrorGauge() {
-	metricRequestErrorNums.WithLabelValues(e.Client.System.Hostname).Set(float64(e.errors))
+	metricRequestErrorNums.WithLabelValues().Set(float64(e.errors))
 }
 
 func (e *Exporter) exportOvnChassisGauge() {
@@ -219,9 +218,9 @@ func (e *Exporter) exportOvnClusterEnableGauge() {
 		slog.Error("failed to get output of cluster status", "error", err)
 	}
 	if isClusterEnabled {
-		metricClusterEnabled.WithLabelValues(e.Client.System.Hostname, e.Client.Database.Northbound.File.Data.Path).Set(1)
+		metricClusterEnabled.WithLabelValues(e.Client.Database.Northbound.File.Data.Path).Set(1)
 	} else {
-		metricClusterEnabled.WithLabelValues(e.Client.System.Hostname, e.Client.Database.Northbound.File.Data.Path).Set(0)
+		metricClusterEnabled.WithLabelValues(e.Client.Database.Northbound.File.Data.Path).Set(0)
 	}
 }
 
@@ -251,9 +250,9 @@ func (e *Exporter) exportOvnDBStatusGauge() {
 			return
 		}
 		if ok {
-			metricDBStatus.WithLabelValues(e.Client.System.Hostname, database).Set(1)
+			metricDBStatus.WithLabelValues(database).Set(1)
 		} else {
-			metricDBStatus.WithLabelValues(e.Client.System.Hostname, database).Set(0)
+			metricDBStatus.WithLabelValues(database).Set(0)
 
 			switch database {
 			case "OVN_Northbound":

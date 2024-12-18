@@ -118,19 +118,19 @@ func (e *Exporter) setLogicalSwitchInfoMetric() {
 		e.IncrementErrorCounter()
 	} else {
 		for _, lsw := range lsws {
-			metricLogicalSwitchInfo.WithLabelValues(e.Client.System.Hostname, lsw.UUID, lsw.Name).Set(1)
-			metricLogicalSwitchPortsNum.WithLabelValues(e.Client.System.Hostname, lsw.UUID, lsw.Name).Set(float64(len(lsw.Ports)))
+			metricLogicalSwitchInfo.WithLabelValues(lsw.UUID, lsw.Name).Set(1)
+			metricLogicalSwitchPortsNum.WithLabelValues(lsw.UUID, lsw.Name).Set(float64(len(lsw.Ports)))
 			if len(lsw.Ports) > 0 {
 				for _, p := range lsw.Ports {
-					metricLogicalSwitchPortBinding.WithLabelValues(e.Client.System.Hostname, lsw.UUID, p, lsw.Name).Set(1)
+					metricLogicalSwitchPortBinding.WithLabelValues(lsw.UUID, p, lsw.Name).Set(1)
 				}
 			}
 			if len(lsw.ExternalIDs) > 0 {
 				for k, v := range lsw.ExternalIDs {
-					metricLogicalSwitchExternalIDs.WithLabelValues(e.Client.System.Hostname, lsw.UUID, k, v, lsw.Name).Set(1)
+					metricLogicalSwitchExternalIDs.WithLabelValues(lsw.UUID, k, v, lsw.Name).Set(1)
 				}
 			}
-			metricLogicalSwitchTunnelKey.WithLabelValues(e.Client.System.Hostname, lsw.UUID, lsw.Name).Set(float64(lsw.TunnelKey))
+			metricLogicalSwitchTunnelKey.WithLabelValues(lsw.UUID, lsw.Name).Set(float64(lsw.TunnelKey))
 		}
 	}
 }
@@ -168,9 +168,9 @@ func (e *Exporter) setLogicalSwitchPortInfoMetric() {
 	} else {
 		for _, port := range lswps {
 			mac, ip := lspAddress(port.Addresses)
-			metricLogicalSwitchPortInfo.WithLabelValues(e.Client.System.Hostname, port.UUID, port.Name, port.ChassisUUID,
+			metricLogicalSwitchPortInfo.WithLabelValues(port.UUID, port.Name, port.ChassisUUID,
 				port.LogicalSwitchName, port.DatapathUUID, port.PortBindingUUID, mac, ip).Set(1)
-			metricLogicalSwitchPortTunnelKey.WithLabelValues(e.Client.System.Hostname, port.UUID, port.LogicalSwitchName, port.Name).Set(float64(port.TunnelKey))
+			metricLogicalSwitchPortTunnelKey.WithLabelValues(port.UUID, port.LogicalSwitchName, port.Name).Set(float64(port.TunnelKey))
 		}
 	}
 }
@@ -259,31 +259,31 @@ func getClusterInfo(direction, dbName string) (*OVNDBClusterStatus, error) {
 }
 
 func (e *Exporter) setOvnClusterInfoMetric(c *OVNDBClusterStatus, dbName string) {
-	metricClusterRole.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid, c.role).Set(1)
-	metricClusterStatus.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid, c.status).Set(1)
-	metricClusterTerm.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid).Set(c.term)
+	metricClusterRole.WithLabelValues(dbName, c.sid, c.cid, c.role).Set(1)
+	metricClusterStatus.WithLabelValues(dbName, c.sid, c.cid, c.status).Set(1)
+	metricClusterTerm.WithLabelValues(dbName, c.sid, c.cid).Set(c.term)
 
 	if c.leader == "self" {
-		metricClusterLeaderSelf.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid).Set(1)
+		metricClusterLeaderSelf.WithLabelValues(dbName, c.sid, c.cid).Set(1)
 	} else {
-		metricClusterLeaderSelf.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid).Set(0)
+		metricClusterLeaderSelf.WithLabelValues(dbName, c.sid, c.cid).Set(0)
 	}
 	if c.vote == "self" {
-		metricClusterVoteSelf.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid).Set(1)
+		metricClusterVoteSelf.WithLabelValues(dbName, c.sid, c.cid).Set(1)
 	} else {
-		metricClusterVoteSelf.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid).Set(0)
+		metricClusterVoteSelf.WithLabelValues(dbName, c.sid, c.cid).Set(0)
 	}
 
-	metricClusterElectionTimer.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid).Set(c.electionTimer)
-	metricClusterNotCommittedEntryCount.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid).Set(c.logNotCommitted)
-	metricClusterNotAppliedEntryCount.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid).Set(c.logNotApplied)
-	metricClusterLogIndexStart.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid).Set(c.logIndexStart)
-	metricClusterLogIndexNext.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid).Set(c.logIndexNext)
+	metricClusterElectionTimer.WithLabelValues(dbName, c.sid, c.cid).Set(c.electionTimer)
+	metricClusterNotCommittedEntryCount.WithLabelValues(dbName, c.sid, c.cid).Set(c.logNotCommitted)
+	metricClusterNotAppliedEntryCount.WithLabelValues(dbName, c.sid, c.cid).Set(c.logNotApplied)
+	metricClusterLogIndexStart.WithLabelValues(dbName, c.sid, c.cid).Set(c.logIndexStart)
+	metricClusterLogIndexNext.WithLabelValues(dbName, c.sid, c.cid).Set(c.logIndexNext)
 
-	metricClusterInConnTotal.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid).Set(c.connIn)
-	metricClusterOutConnTotal.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid).Set(c.connOut)
-	metricClusterInConnErrTotal.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid).Set(c.connInErr)
-	metricClusterOutConnErrTotal.WithLabelValues(e.Client.System.Hostname, dbName, c.sid, c.cid).Set(c.connOutErr)
+	metricClusterInConnTotal.WithLabelValues(dbName, c.sid, c.cid).Set(c.connIn)
+	metricClusterOutConnTotal.WithLabelValues(dbName, c.sid, c.cid).Set(c.connOut)
+	metricClusterInConnErrTotal.WithLabelValues(dbName, c.sid, c.cid).Set(c.connInErr)
+	metricClusterOutConnErrTotal.WithLabelValues(dbName, c.sid, c.cid).Set(c.connOutErr)
 }
 
 func parseDbStatus(output string) int {

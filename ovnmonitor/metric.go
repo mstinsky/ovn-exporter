@@ -11,7 +11,6 @@ var (
 			Help:      "OVN Health Status. The values are:(2) for standby or follower, (1) for active or leader, (0) for unhealthy.",
 		},
 		[]string{
-			"hostname",
 			"component",
 		})
 
@@ -22,7 +21,6 @@ var (
 			Help:      "OVN Health Status. The values are always 1. While the value of status label is the really status report.",
 		},
 		[]string{
-			"hostname",
 			"component",
 			"status",
 		})
@@ -34,7 +32,6 @@ var (
 			Help:      "The number of failed requests to OVN stack.",
 		},
 		[]string{
-			"hostname",
 		})
 
 	metricDBFileSize = prometheus.NewGaugeVec(
@@ -44,7 +41,6 @@ var (
 			Help:      "The size of a database file associated with an OVN component. The unit is Bytes.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 		})
 
@@ -69,7 +65,6 @@ var (
 			Help:      "The information about OVN logical switch. This metric is always up (1).",
 		},
 		[]string{
-			"hostname",
 			"uuid",
 			"name",
 		})
@@ -81,7 +76,6 @@ var (
 			Help:      "Provides the external IDs and values associated with OVN logical switches. This metric is always up (1).",
 		},
 		[]string{
-			"hostname",
 			"uuid",
 			"key",
 			"value",
@@ -95,7 +89,6 @@ var (
 			Help:      "Provides the association between a logical switch and a logical switch port. This metric is always up (1).",
 		},
 		[]string{
-			"hostname",
 			"uuid",
 			"port",
 			"logical_switch_name",
@@ -108,7 +101,6 @@ var (
 			Help:      "The value of the tunnel key associated with the logical switch.",
 		},
 		[]string{
-			"hostname",
 			"uuid",
 			"logical_switch_name",
 		})
@@ -120,7 +112,6 @@ var (
 			Help:      "The number of logical switch ports connected to the OVN logical switch.",
 		},
 		[]string{
-			"hostname",
 			"uuid",
 			"logical_switch_name",
 		})
@@ -132,7 +123,6 @@ var (
 			Help:      "The information about OVN logical switch port. This metric is always up (1).",
 		},
 		[]string{
-			"hostname",
 			"uuid",
 			"name",
 			"chassis",
@@ -150,7 +140,6 @@ var (
 			Help:      "The value of the tunnel key associated with the logical switch port.",
 		},
 		[]string{
-			"hostname",
 			"uuid",
 			"logical_switch_name",
 			"port_name",
@@ -164,7 +153,6 @@ var (
 			Help:      "Is OVN clustering enabled (1) or not (0).",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 		})
 
@@ -175,7 +163,6 @@ var (
 			Help:      "A metric with a constant '1' value labeled by server role.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -189,7 +176,6 @@ var (
 			Help:      "A metric with a constant '1' value labeled by server status.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -203,7 +189,6 @@ var (
 			Help:      "The current raft term known by this server.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -216,7 +201,6 @@ var (
 			Help:      "Is this server consider itself a leader (1) or not (0).",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -229,7 +213,6 @@ var (
 			Help:      "Is this server voted itself as a leader (1) or not (0).",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -242,7 +225,6 @@ var (
 			Help:      "The current election timer value.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -255,7 +237,6 @@ var (
 			Help:      "The number of log entries not yet committed by this server.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -268,7 +249,6 @@ var (
 			Help:      "The number of log entries not yet applied by this server.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -281,7 +261,6 @@ var (
 			Help:      "The log entry index start value associated with this server.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -294,7 +273,6 @@ var (
 			Help:      "The log entry index next value associated with this server.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -307,7 +285,6 @@ var (
 			Help:      "The total number of inbound connections to the server.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -320,7 +297,6 @@ var (
 			Help:      "The total number of outbound connections from the server.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -333,7 +309,6 @@ var (
 			Help:      "The total number of failed inbound connections to the server.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -346,7 +321,6 @@ var (
 			Help:      "The total number of failed outbound connections from the server.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -360,7 +334,6 @@ var (
 			Help:      "This metric appears when a cluster peer is connected to this server. This metric is always 1.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -375,7 +348,6 @@ var (
 			Help:      "This metric appears when this server connects to a cluster peer. This metric is always 1.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -390,7 +362,6 @@ var (
 			Help:      "The total number of peers in this server's cluster.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -403,7 +374,6 @@ var (
 			Help:      "The raft's next index associated with this cluster peer.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -417,7 +387,6 @@ var (
 			Help:      "The raft's match index associated with this cluster peer.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -431,7 +400,6 @@ var (
 			Help:      "The raft's next index associated with this server.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -444,7 +412,6 @@ var (
 			Help:      "The raft's match index associated with this server.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 			"server_id",
 			"cluster_id",
@@ -457,7 +424,6 @@ var (
 			Help:      "The status of OVN NB/SB DB, (1) for healthy, (0) for unhealthy.",
 		},
 		[]string{
-			"hostname",
 			"db_name",
 		})
 )
