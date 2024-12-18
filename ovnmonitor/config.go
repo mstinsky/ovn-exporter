@@ -40,7 +40,7 @@ func ParseFlags() (*Configuration, error) {
 		argPollInterval  = pflag.Int("ovs.poll-interval", 30, "The minimum interval (in seconds) between collections from OVN server.")
 
 		argDatabaseNorthboundSocketRemote  = pflag.String("database.northbound.socket.remote", "unix:/run/ovn/ovnnb_db.sock", "JSON-RPC unix socket to OVN NB db.")
-		argDatabaseNorthboundSocketControl = pflag.String("database.northbound.socket.control", "unix:/run/ovn/ovnnb_db.ctl", "JSON-RPC unix socket to OVN NB app.")
+		argDatabaseNorthboundSocketControl = pflag.String("database.northbound.socket.control", "/run/ovn/ovnnb_db.ctl", "control socket to OVN NB app.")
 		argDatabaseNorthboundFileDataPath  = pflag.String("database.northbound.file.data.path", "/etc/ovn/ovnnb_db.db", "OVN NB db file.")
 		argDatabaseNorthboundFilePidPath   = pflag.String("database.northbound.file.pid.path", "/run/ovn/ovnnb_db.pid", "OVN NB db process id file.")
 		argDatabaseNorthboundPortDefault   = pflag.Int("database.northbound.port.default", 6641, "OVN NB db network socket port.")
@@ -48,7 +48,7 @@ func ParseFlags() (*Configuration, error) {
 		argDatabaseNorthboundPortRaft      = pflag.Int("database.northbound.port.raft", 6643, "OVN NB db network port for clustering (raft)")
 
 		argDatabaseSouthboundSocketRemote  = pflag.String("database.southbound.socket.remote", "unix:/run/ovn/ovnsb_db.sock", "JSON-RPC unix socket to OVN SB db.")
-		argDatabaseSouthboundSocketControl = pflag.String("database.southbound.socket.control", "unix:/run/ovn/ovnsb_db.ctl", "JSON-RPC unix socket to OVN SB app.")
+		argDatabaseSouthboundSocketControl = pflag.String("database.southbound.socket.control", "/run/ovn/ovnsb_db.ctl", "control socket to OVN SB app.")
 		argDatabaseSouthboundFileDataPath  = pflag.String("database.southbound.file.data.path", "/etc/ovn/ovnsb_db.db", "OVN SB db file.")
 		argDatabaseSouthboundFilePidPath   = pflag.String("database.southbound.file.pid.path", "/run/ovn/ovnsb_db.pid", "OVN SB db process id file.")
 		argDatabaseSouthboundPortDefault   = pflag.Int("database.southbound.port.default", 6642, "OVN SB db network socket port.")

@@ -29,6 +29,8 @@ type Exporter struct {
 	pollInterval int
 	errors       int64
 	errorsLocker sync.RWMutex
+	nbSocketControl     string
+	sbSocketControl     string
 }
 
 // OVNDBClusterStatus contains information about a cluster.
@@ -62,12 +64,14 @@ func NewExporter(cfg *Configuration) *Exporter {
 func (e *Exporter) initParas(cfg *Configuration) {
 	e.timeout = cfg.PollTimeout
 	e.pollInterval = cfg.PollInterval
+	e.nbSocketControl = cfg.DatabaseNorthboundSocketControl
+	e.sbSocketControl = cfg.DatabaseSouthboundSocketControl
 
 	e.Client.Timeout = cfg.PollTimeout
 
 	e.Client.Database.Northbound.Name = "OVN_Northbound"
 	e.Client.Database.Northbound.Socket.Remote = cfg.DatabaseNorthboundSocketRemote
-	e.Client.Database.Northbound.Socket.Control = cfg.DatabaseNorthboundSocketControl
+	e.Client.Database.Northbound.Socket.Control = "unix:" + cfg.DatabaseNorthboundSocketControl
 	e.Client.Database.Northbound.File.Data.Path = cfg.DatabaseNorthboundFileDataPath
 	e.Client.Database.Northbound.File.Pid.Path = cfg.DatabaseNorthboundFilePidPath
 	e.Client.Database.Northbound.Port.Default = cfg.DatabaseNorthboundPortDefault
@@ -76,7 +80,7 @@ func (e *Exporter) initParas(cfg *Configuration) {
 
 	e.Client.Database.Southbound.Name = "OVN_Southbound"
 	e.Client.Database.Southbound.Socket.Remote = cfg.DatabaseSouthboundSocketRemote
-	e.Client.Database.Southbound.Socket.Control = cfg.DatabaseSouthboundSocketControl
+	e.Client.Database.Southbound.Socket.Control = "unix:" + cfg.DatabaseSouthboundSocketControl
 	e.Client.Database.Southbound.File.Data.Path = cfg.DatabaseSouthboundFileDataPath
 	e.Client.Database.Southbound.File.Pid.Path = cfg.DatabaseSouthboundFilePidPath
 	e.Client.Database.Southbound.Port.Default = cfg.DatabaseSouthboundPortDefault
@@ -227,11 +231,11 @@ func (e *Exporter) exportOvnClusterEnableGauge() {
 func (e *Exporter) exportOvnClusterInfoGauge() {
 	resetOvnClusterMetrics()
 	dirDbMap := map[string]string{
-		"nb": "OVN_Northbound",
-		"sb": "OVN_Southbound",
+		e.nbSocketControl: "OVN_Northbound",
+		e.sbSocketControl: "OVN_Southbound",
 	}
-	for direction, database := range dirDbMap {
-		clusterStatus, err := getClusterInfo(direction, database)
+	for socket, database := range dirDbMap {
+		clusterStatus, err := getClusterInfo(socket, database)
 		if err != nil {
 			slog.Error(fmt.Sprintf("Failed to get Cluster Info for database %s", database), "error", err)
 			return

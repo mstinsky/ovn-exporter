@@ -23,24 +23,20 @@ func (e *Exporter) getOvnStatus() map[string]int {
 	result := make(map[string]int)
 
 	// get ovn-northbound status
-	cmdstr := "ovs-appctl -t /var/run/ovn/ovnnb_db.ctl cluster/status OVN_Northbound"
-	cmd := exec.Command("sh", "-c", cmdstr)
-	output, err := cmd.CombinedOutput()
+	output, err := e.Client.GetAppClusteringInfo("ovsdb-server-northbound")
 	if err != nil {
 		slog.Error("get ovn-northbound status failed", "error", err)
 		result["ovsdb-server-northbound"] = 0
 	}
-	result["ovsdb-server-northbound"] = parseDbStatus(string(output))
+	result["ovsdb-server-northbound"] = output.Role
 
 	// get ovn-southbound status
-	cmdstr = "ovs-appctl -t /var/run/ovn/ovnsb_db.ctl cluster/status OVN_Southbound"
-	cmd = exec.Command("sh", "-c", cmdstr)
-	output, err = cmd.CombinedOutput()
+	output, err = e.Client.GetAppClusteringInfo("ovsdb-server-southbound")
 	if err != nil {
 		slog.Error("get ovn-southbound status failed", "error", err)
 		result["ovsdb-server-southbound"] = 0
 	}
-	result["ovsdb-server-southbound"] = parseDbStatus(string(output))
+	result["ovsdb-server-southbound"] = output.Role
 
 	// get ovn-northd status
 	pid, err := os.ReadFile("/var/run/ovn/ovn-northd.pid")
@@ -60,9 +56,9 @@ func (e *Exporter) getOvnStatus() map[string]int {
 		} else {
 			status := strings.TrimSpace(strings.Split(string(output), ":")[1])
 			if status == "standby" {
-				result["ovn-northd"] = 2
-			} else if status == "active" {
 				result["ovn-northd"] = 1
+			} else if status == "active" {
+				result["ovn-northd"] = 3
 			}
 		}
 	}
@@ -175,11 +171,11 @@ func (e *Exporter) setLogicalSwitchPortInfoMetric() {
 	}
 }
 
-func getClusterInfo(direction, dbName string) (*OVNDBClusterStatus, error) {
+func getClusterInfo(socket, dbName string) (*OVNDBClusterStatus, error) {
 	clusterStatus := &OVNDBClusterStatus{}
 	var err error
 
-	cmdstr := fmt.Sprintf("ovs-appctl -t /var/run/ovn/ovn%s_db.ctl cluster/status %s", direction, dbName)
+	cmdstr := fmt.Sprintf("ovs-appctl -t %s cluster/status %s", socket, dbName)
 	cmd := exec.Command("sh", "-c", cmdstr)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
