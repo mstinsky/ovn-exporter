@@ -29,6 +29,7 @@ type Configuration struct {
 	DatabaseSouthboundPortSsl       int
 	DatabaseSouthboundPortRaft      int
 	ServiceNorthdFilePidPath        string
+	ServiceNorthdSocketControl      string
 }
 
 // ParseFlags get parameters information.
@@ -56,6 +57,7 @@ func ParseFlags() (*Configuration, error) {
 		argDatabaseSouthboundPortRaft      = pflag.Int("database.southbound.port.raft", 6644, "OVN SB db network port for clustering (raft)")
 
 		argServiceNorthdFilePidPath   = pflag.String("service.ovn.northd.file.pid.path", "/var/run/ovn/ovn-northd.pid", "OVN northd daemon process id file.")
+		argServiceNorthdSocketControl = pflag.String("service.ovn.northd.socket.control", "", "OVN northd control socket to northd app.")
 	)
 
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
@@ -82,6 +84,7 @@ func ParseFlags() (*Configuration, error) {
 		DatabaseSouthboundPortSsl:       *argDatabaseSouthboundPortSsl,
 		DatabaseSouthboundPortRaft:      *argDatabaseSouthboundPortRaft,
 		ServiceNorthdFilePidPath:        *argServiceNorthdFilePidPath,
+		ServiceNorthdSocketControl:      *argServiceNorthdSocketControl,
 	}
 
 	slog.Info(fmt.Sprintf("ovn monitor config is %+v", config))
