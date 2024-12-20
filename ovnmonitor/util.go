@@ -19,6 +19,18 @@ func (e *Exporter) IncrementErrorCounter() {
 	atomic.AddInt64(&e.errors, 1)
 }
 
+func (e *Exporter) getNorthdControlSocket() (string, error) {
+	if e.northdSocketControl != "" {
+		return e.northdSocketControl, nil
+	} else {
+		pid, err := os.ReadFile(e.Client.Service.Northd.File.Pid.Path)
+		if err != nil {
+			return "", fmt.Errorf("read ovn-northd pid failed: %w", err)
+		}
+		return fmt.Sprintf("/var/run/ovn/ovn-northd." + strings.Trim(string(pid), "\n") + ".ctl"), nil
+	}
+}
+
 func (e *Exporter) getOvnStatus() map[string]int {
 	result := make(map[string]int)
 
@@ -39,12 +51,12 @@ func (e *Exporter) getOvnStatus() map[string]int {
 	result["ovsdb-server-southbound"] = output.Role
 
 	// get ovn-northd status
-	pid, err := os.ReadFile("/var/run/ovn/ovn-northd.pid")
+	northdControlSocket, err := e.getNorthdControlSocket()
 	if err != nil {
-		slog.Error("read ovn-northd pid failed", "error", err)
+		slog.Error("failed to get northd control socket", "error", err)
 		result["ovn-northd"] = 0
 	} else {
-		cmdstr := "ovs-appctl -t /var/run/ovn/ovn-northd." + strings.Trim(string(pid), "\n") + ".ctl status"
+		cmdstr := fmt.Sprintf("ovs-appctl -t %s status", northdControlSocket)
 		cmd := exec.Command("sh", "-c", cmdstr)
 		output, err := cmd.CombinedOutput()
 		if err != nil {
