@@ -74,19 +74,11 @@ func (e *Exporter) initParas(cfg *Configuration) {
 	e.Client.Database.Northbound.Socket.Remote = cfg.DatabaseNorthboundSocketRemote
 	e.Client.Database.Northbound.Socket.Control = "unix:" + cfg.DatabaseNorthboundSocketControl
 	e.Client.Database.Northbound.File.Data.Path = cfg.DatabaseNorthboundFileDataPath
-	e.Client.Database.Northbound.File.Pid.Path = cfg.DatabaseNorthboundFilePidPath
-	e.Client.Database.Northbound.Port.Default = cfg.DatabaseNorthboundPortDefault
-	e.Client.Database.Northbound.Port.Ssl = cfg.DatabaseNorthboundPortSsl
-	e.Client.Database.Northbound.Port.Raft = cfg.DatabaseNorthboundPortRaft
 
 	e.Client.Database.Southbound.Name = "OVN_Southbound"
 	e.Client.Database.Southbound.Socket.Remote = cfg.DatabaseSouthboundSocketRemote
 	e.Client.Database.Southbound.Socket.Control = "unix:" + cfg.DatabaseSouthboundSocketControl
 	e.Client.Database.Southbound.File.Data.Path = cfg.DatabaseSouthboundFileDataPath
-	e.Client.Database.Southbound.File.Pid.Path = cfg.DatabaseSouthboundFilePidPath
-	e.Client.Database.Southbound.Port.Default = cfg.DatabaseSouthboundPortDefault
-	e.Client.Database.Southbound.Port.Ssl = cfg.DatabaseSouthboundPortSsl
-	e.Client.Database.Southbound.Port.Raft = cfg.DatabaseSouthboundPortRaft
 
 	e.Client.Service.Northd.File.Pid.Path = cfg.ServiceNorthdFilePidPath
 	if cfg.ServiceNorthdSocketControl != "" {
