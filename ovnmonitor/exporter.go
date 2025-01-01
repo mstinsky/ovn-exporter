@@ -24,13 +24,14 @@ var (
 // the prometheus metrics package.
 type Exporter struct {
 	sync.RWMutex
-	Client       *ovsdb.OvnClient
-	timeout      int
-	pollInterval int
-	errors       int64
-	errorsLocker sync.RWMutex
+	Client              *ovsdb.OvnClient
+	timeout             int
+	pollInterval        int
+	errors              int64
+	errorsLocker        sync.RWMutex
 	nbSocketControl     string
 	sbSocketControl     string
+	northdSocketControl string
 }
 
 // OVNDBClusterStatus contains information about a cluster.
@@ -88,6 +89,12 @@ func (e *Exporter) initParas(cfg *Configuration) {
 	e.Client.Database.Southbound.Port.Raft = cfg.DatabaseSouthboundPortRaft
 
 	e.Client.Service.Northd.File.Pid.Path = cfg.ServiceNorthdFilePidPath
+	if cfg.ServiceNorthdSocketControl != "" {
+		e.northdSocketControl = cfg.ServiceNorthdSocketControl
+		e.Client.Service.Northd.Socket.Control = "unix" + cfg.ServiceNorthdSocketControl
+	} else {
+		e.northdSocketControl = ""
+	}
 }
 
 // StartConnection connect to database socket
