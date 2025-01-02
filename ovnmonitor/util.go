@@ -294,20 +294,14 @@ func (e *Exporter) setOvnClusterInfoMetric(c *OVNDBClusterStatus, dbName string)
 	metricClusterOutConnErrTotal.WithLabelValues(dbName, c.sid, c.cid).Set(c.connOutErr)
 }
 
-func getDBStatus(dbName string) (bool, error) {
-	var cmdstr string
+func getDBStatus(socket string, dbName string) (bool, error) {
 	var result bool
-	switch dbName {
-	case "OVN_Northbound":
-		cmdstr = fmt.Sprintf("ovn-appctl -t /var/run/ovn/ovnnb_db.ctl ovsdb-server/get-db-storage-status %s", dbName)
-	case "OVN_Southbound":
-		cmdstr = fmt.Sprintf("ovn-appctl -t /var/run/ovn/ovnsb_db.ctl ovsdb-server/get-db-storage-status %s", dbName)
-	}
+	cmdstr := fmt.Sprintf("ovn-appctl -t %s ovsdb-server/get-db-storage-status %s", socket, dbName)
 
 	cmd := exec.Command("sh", "-c", cmdstr)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		slog.Error("get ovn-northbound status failed", "error", err)
+		slog.Error("ovn command ovsdb-server/get-db-storage-status failed", "database", dbName, "error", err)
 		return false, err
 	}
 	lines := strings.Split(string(output), "\n")

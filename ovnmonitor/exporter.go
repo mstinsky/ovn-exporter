@@ -245,9 +245,12 @@ func (e *Exporter) exportOvnClusterInfoGauge() {
 
 func (e *Exporter) exportOvnDBStatusGauge() {
 	metricDBStatus.Reset()
-	dbList := []string{"OVN_Northbound", "OVN_Southbound"}
-	for _, database := range dbList {
-		ok, err := getDBStatus(database)
+	dbMap := map[string]string{
+		e.nbSocketControl: "OVN_Northbound",
+		e.sbSocketControl: "OVN_Southbound",
+	}
+	for socket, database := range dbMap {
+		ok, err := getDBStatus(socket, database)
 		if err != nil {
 			slog.Error(fmt.Sprintf("Failed to get DB status for %s", database), "error", err)
 			return
