@@ -11,7 +11,7 @@ COPY --from=builder /app/ovn-exporter /ovn-exporter
 
 RUN apt-get update && apt-get install -y \
     ovn-common \
-    openvswitch-switch \
+    openvswitch-common \
     && rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT [ "/ovn-exporter" ]
