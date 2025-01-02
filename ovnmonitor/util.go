@@ -294,28 +294,6 @@ func (e *Exporter) setOvnClusterInfoMetric(c *OVNDBClusterStatus, dbName string)
 	metricClusterOutConnErrTotal.WithLabelValues(dbName, c.sid, c.cid).Set(c.connOutErr)
 }
 
-func parseDbStatus(output string) int {
-	var status string
-	var result int
-	lines := strings.Split(output, "\n")
-	for _, line := range lines {
-		if strings.Contains(line, "Role:") {
-			status = strings.TrimSpace(strings.Split(line, ":")[1])
-			break
-		}
-	}
-
-	switch status {
-	case "leader":
-		result = 1
-	case "follower":
-		result = 2
-	default:
-		result = 0
-	}
-	return result
-}
-
 func getDBStatus(dbName string) (bool, error) {
 	var cmdstr string
 	var result bool
