@@ -56,7 +56,7 @@ func (e *Exporter) getOvnStatus() map[string]int {
 		slog.Error("failed to get northd control socket", "error", err)
 		result["ovn-northd"] = 0
 	} else {
-		cmdstr := fmt.Sprintf("ovs-appctl -t %s status", northdControlSocket)
+		cmdstr := fmt.Sprintf("ovn-appctl -t %s status", northdControlSocket)
 		cmd := exec.Command("sh", "-c", cmdstr)
 		output, err := cmd.CombinedOutput()
 		if err != nil {
@@ -82,7 +82,7 @@ func (e *Exporter) getOvnStatusContent() map[string]string {
 	result := map[string]string{"ovsdb-server-northbound": "", "ovsdb-server-southbound": ""}
 
 	// get ovn-northbound status
-	cmdstr := "ovs-appctl -t /var/run/ovn/ovnnb_db.ctl cluster/status OVN_Northbound"
+	cmdstr := "ovn-appctl -t /var/run/ovn/ovnnb_db.ctl cluster/status OVN_Northbound"
 	cmd := exec.Command("sh", "-c", cmdstr)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -94,7 +94,7 @@ func (e *Exporter) getOvnStatusContent() map[string]string {
 	}
 
 	// get ovn-southbound status
-	cmdstr = "ovs-appctl -t /var/run/ovn/ovnsb_db.ctl cluster/status OVN_Southbound"
+	cmdstr = "ovn-appctl -t /var/run/ovn/ovnsb_db.ctl cluster/status OVN_Southbound"
 	cmd = exec.Command("sh", "-c", cmdstr)
 	output, err = cmd.CombinedOutput()
 	if err != nil {
@@ -187,7 +187,7 @@ func getClusterInfo(socket, dbName string) (*OVNDBClusterStatus, error) {
 	clusterStatus := &OVNDBClusterStatus{}
 	var err error
 
-	cmdstr := fmt.Sprintf("ovs-appctl -t %s cluster/status %s", socket, dbName)
+	cmdstr := fmt.Sprintf("ovn-appctl -t %s cluster/status %s", socket, dbName)
 	cmd := exec.Command("sh", "-c", cmdstr)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
